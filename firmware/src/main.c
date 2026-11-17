@@ -37,6 +37,7 @@ static void rtcEventHandler (RTC_TIMER32_INT_MASK intCause, uintptr_t context)
 
 
 
+static int test = 0;
 
 int main ( void )
 {
@@ -53,6 +54,8 @@ int main ( void )
     ApplicationProtocolInit();
     
     FilamentInit();
+    
+    
     while( true )
     {
       
@@ -70,6 +73,21 @@ int main ( void )
                         
             LED_VTL_Toggle();
             
+            if(test==2){
+                FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
+            }
+            
+            if(test==10){
+                FilamentSelectFocus(FILSTAT_BG,4000);
+            }
+            if(test==13){
+                FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
+            }
+            
+            if(!FIL_Data.warmup){
+                if(test<23)  test++;
+                else test = 0;
+            }
             
         }     
         
@@ -91,7 +109,7 @@ int main ( void )
             trigger_time &=~ _15_64_ms_TriggerTime;      
             
             
-          
+           Filament15msCallback();
         }
         
        

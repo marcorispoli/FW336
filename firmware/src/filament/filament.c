@@ -17,16 +17,11 @@ static bool  FilamentVrefSetG2(unsigned short value );
 
 void FilamentInit(void){
     
-    // Disabilita il reference
-    uC_REFDIS_Set();
-    uC_FILON_Clear();
-    FIL_Data.status = FILSTAT_OFF;
-    
-    uC_FOCUS_BA_Set();
-    uC_FILON_Clear();
-    
+    FilamentSelectFocus(FILSTAT_OFF,0);
+   
     // Azzeramento Vreference
     FilamentVrefSetG1(0);
+    FilamentVrefSetG2(0);
 }
 
 /**
@@ -79,36 +74,127 @@ bool  FilamentVrefSetG2(unsigned short value ){
 }
 
 
-float FilamentCorrectionFactor(float kv ){
+unsigned short FilamentCalibratedValue(unsigned short ma){
+     float val = (unsigned short) ((float) ma * (float) DAC_2000mA_REFERENCE/ 2000.0 );
+    if(val > 4095) return 4095; 
+    return (unsigned short) val;
+}
+
+bool FilamentSelectFocus(FILSTAT_t focus, unsigned short target_current){
+    if(focus == FILSTAT_OFF) {
+        FIL_Data.status = FILSTAT_OFF;
+        uC_REFDIS_Set();
+        uC_FILON_Clear();
+        FilamentVrefSetG1(0);        
+        FIL_Data.target_current_ma = 0;
+        FIL_Data.warmup_current_ma = 0;
+        return false;
+    }
     
-    // To Be Done
-    return 1;
+    // Se il fuoco non è cambiato e non sono cambiati i dati di controllo 
+    // non fa altro
+    if( (focus == FIL_Data.status) && (FIL_Data.target_current_ma == target_current)) return false;
+    
+    // Azione immediata se la corrente richiesta è inferiore
+    if((focus == FIL_Data.status) && (FIL_Data.target_current_ma > target_current)){
+        FIL_Data.target_current_ma = target_current;
+        FIL_Data.warmup_current_ma = target_current;
+        FilamentRMSCurrentSet(target_current);
+        return false;
+    }
+    
+    // Attiva la fase di warmup
+    FIL_Data.warmup = true;
+    
+    // Deve impostare la fase di warmup
+    // Se il fuoco era spento, il warmup sarà più lungo e graduale mentre se era già
+    // riscaldato allora sarà sufficiente portarlo alla corrente target con una rampa veloce
+    if(focus != FIL_Data.status){
+        FIL_Data.warmup_current_ma = INITIAL_WARMUP_CURRENT_ma;
+        
+        // Spegne il riferimento
+        FilamentVrefSetG1(0);  
+        
+        // Apre il filamento
+        uC_FILON_Clear();
+        FIL_Data.switch_filament = true;
+    }else{        
+        FIL_Data.switch_filament = false;
+        
+        
+        // Riparte da dove stava
+        FIL_Data.warmup_current_ma = FIL_Data.target_current_ma;
+    }
+    
+    FIL_Data.target_current_ma = target_current;
+    FIL_Data.status = focus;
+    return true;
 }
 
 /**
- * This function set the Vreference of the UC3841 
- * to the value corrispondent to the desidered output HV voltage.
+ * Questa funzione imposta il valore RMS della corrente di filamento.
  * 
+ * Il Valore RMS corrisponde al valore raddrizzato * 0.9
  * 
- * + Nsec/Nsens = 87
- * + Vreference_3841 = (Vfeedback - 1.4) * 8.32 / 1000 (Input voltage divisor network)
- * + Vreference_3841 = [(Vo/87) - 1.4] * [8.32 / 1000] 
- * + Vdac = N/1000 (Gain = 2)
- * + Vreference_3841 = 2 * Vdac = (2*N/1000);
+ * @param ma: è il valore rms richiesto
  * 
- * N = Vreference_3841 * 1000 / 2 = (Vo/87 - 1.4) * 8.32 / 2 
- * N = (Vo / 20,91 - 5,82)
- * 
- * @param kv: target output voltage (kV)
- * @return 
+ * @return tru: l'impostazione è andata a buon fine
  */
-bool FilamentCurrentSet(float ma ){
-    unsigned short N;
+bool FilamentRMSCurrentSet(unsigned short ma){
     
+    // Limita il valore massimo selezionabile 
+    if(ma > MAX_SELECTABLE_CURRENT_mA) ma = MAX_SELECTABLE_CURRENT_mA;    
+    unsigned short N = FilamentCalibratedValue(ma);
+    uC_REFDIS_Clear();
+    uC_FILON_Set();
+    return FilamentVrefSetG1(N);
     
-    // Calcolo N con Gain = 2 e con eventuale correzione introdotta da calibrazione;
-    //N = (unsigned short) (GeneratorHVCorrectionFactor(kv) * ((kv * 1000 / 20.91) - 5.82));
-    N= 2048;
-    return FilamentVrefSetG2(N);
+}
+
+
+void Filament15msCallback(void){
+    static int delay = 0;
     
+    if(delay){
+        delay--;
+        return;
+    } 
+    
+    // GEstione della fase di accensione del filamento
+    if(FIL_Data.warmup){
+        // Esegue lo scambio dei rele del filamento
+        if(FIL_Data.switch_filament){
+            FIL_Data.switch_filament = false;
+            
+            if(FIL_Data.status == FILSTAT_AS){
+                SET_FILA;
+                SET_FILS;
+            }else if(FIL_Data.status == FILSTAT_AG){
+                SET_FILA;
+                SET_FILG;
+            }else if(FIL_Data.status == FILSTAT_BS){
+                SET_FILB;
+                SET_FILS;
+            }else if(FIL_Data.status == FILSTAT_BG){
+                SET_FILB;
+                SET_FILG;
+            }
+            uC_REFDIS_Clear();
+            uC_FILON_Set();
+            delay = 20;
+        }
+        
+        if(FIL_Data.warmup_current_ma < WARMUP_CURRENT_ma) delay = 4;
+        else delay = 0;
+       
+        FIL_Data.warmup_current_ma += 15;
+        if(FIL_Data.warmup_current_ma >= FIL_Data.target_current_ma){
+            FIL_Data.warmup_current_ma = FIL_Data.target_current_ma;
+            FIL_Data.warmup = false;
+        }
+        
+        FilamentRMSCurrentSet(FIL_Data.warmup_current_ma);
+    }else{
+        delay = 0;
+    }
 }
