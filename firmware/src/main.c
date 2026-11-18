@@ -76,18 +76,19 @@ int main ( void )
             if(test==2){
                 FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
             }
-            
+           /*
             if(test==10){
                 FilamentSelectFocus(FILSTAT_BG,4000);
             }
             if(test==13){
                 FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
             }
-            
+            */
             if(!FIL_Data.warmup){
                 if(test<23)  test++;
                 else test = 0;
             }
+             
             
         }     
         
