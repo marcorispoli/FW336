@@ -1062,7 +1062,9 @@
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="adc1" name="ADC_CONV_TRIGGER"/>
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;adc1&gt;
   &lt;adc1 dnOrder=&quot;0&quot; id=&quot;ADC_CONV_TRIGGER&quot;&gt;
-    &lt;Values dnOrder=&quot;0&quot;/&gt;
+    &lt;Values dnOrder=&quot;0&quot;&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;SW Trigger&quot;/&gt;
+    &lt;/Values&gt;
   &lt;/adc1&gt;
 &lt;/adc1&gt;
 </value>
@@ -1081,7 +1083,7 @@
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;adc1&gt;
   &lt;adc1 dnOrder=&quot;0&quot; id=&quot;ADC_CTRLA_PRESCALER&quot;&gt;
     &lt;Values dnOrder=&quot;0&quot;&gt;
-      &lt;User dnOrder=&quot;0&quot; value=&quot;0&quot;/&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;6&quot;/&gt;
     &lt;/Values&gt;
   &lt;/adc1&gt;
 &lt;/adc1&gt;
@@ -1551,7 +1553,7 @@
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;adc1&gt;
   &lt;adc1 dnOrder=&quot;0&quot; id=&quot;ADC_SAMPCTRL_SAMPLEN&quot;&gt;
     &lt;Values dnOrder=&quot;0&quot;&gt;
-      &lt;User dnOrder=&quot;0&quot; value=&quot;2&quot;/&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;7&quot;/&gt;
     &lt;/Values&gt;
   &lt;/adc1&gt;
 &lt;/adc1&gt;
@@ -1572,7 +1574,14 @@
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="adc1" name="ADC_SEQCTRL_SEQ0"/>
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;adc1&gt;
   &lt;adc1 dnOrder=&quot;0&quot; id=&quot;ADC_SEQCTRL_SEQ0&quot;&gt;
-    &lt;Values dnOrder=&quot;0&quot;/&gt;
+    &lt;Attributes dnOrder=&quot;0&quot;&gt;
+      &lt;Boolean dnOrder=&quot;0&quot; id=&quot;visible&quot;&gt;
+        &lt;Value dnOrder=&quot;0&quot;&gt;true&lt;/Value&gt;
+      &lt;/Boolean&gt;
+    &lt;/Attributes&gt;
+    &lt;Values dnOrder=&quot;1&quot;&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;false&quot;/&gt;
+    &lt;/Values&gt;
   &lt;/adc1&gt;
 &lt;/adc1&gt;
 </value>
@@ -1662,7 +1671,9 @@
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="adc1" name="ADC_SEQ_ENABLE"/>
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;adc1&gt;
   &lt;adc1 dnOrder=&quot;0&quot; id=&quot;ADC_SEQ_ENABLE&quot;&gt;
-    &lt;Values dnOrder=&quot;0&quot;/&gt;
+    &lt;Values dnOrder=&quot;0&quot;&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;false&quot;/&gt;
+    &lt;/Values&gt;
   &lt;/adc1&gt;
 &lt;/adc1&gt;
 </value>
@@ -9321,7 +9332,7 @@
     &lt;ComponentGraph dnOrder=&quot;1&quot; id=&quot;__ROOTVIEW&quot;&gt;
       &lt;ElementPositions dnOrder=&quot;0&quot;&gt;
         &lt;ElementPosition dnOrder=&quot;0&quot; id=&quot;adc0&quot; x=&quot;500&quot; y=&quot;19&quot;/&gt;
-        &lt;ElementPosition dnOrder=&quot;1&quot; id=&quot;adc1&quot; x=&quot;500&quot; y=&quot;101&quot;/&gt;
+        &lt;ElementPosition dnOrder=&quot;1&quot; id=&quot;adc1&quot; x=&quot;500&quot; y=&quot;100&quot;/&gt;
         &lt;ElementPosition dnOrder=&quot;2&quot; id=&quot;can0&quot; x=&quot;340&quot; y=&quot;20&quot;/&gt;
         &lt;ElementPosition dnOrder=&quot;3&quot; id=&quot;cmsis&quot; x=&quot;30&quot; y=&quot;240&quot;/&gt;
         &lt;ElementPosition dnOrder=&quot;4&quot; id=&quot;core&quot; x=&quot;30&quot; y=&quot;200&quot;/&gt;
@@ -14908,7 +14919,7 @@
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;core&gt;
   &lt;core dnOrder=&quot;0&quot; id=&quot;PIN_5_FUNCTION_TYPE&quot;&gt;
     &lt;Values dnOrder=&quot;0&quot;&gt;
-      &lt;User dnOrder=&quot;0&quot; value=&quot;ADC0_X22/Y22&quot;/&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;ADC1_AIN6&quot;/&gt;
     &lt;/Values&gt;
   &lt;/core&gt;
 &lt;/core&gt;
@@ -15430,7 +15441,7 @@
          <value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;core&gt;
   &lt;core dnOrder=&quot;0&quot; id=&quot;PIN_6_FUNCTION_TYPE&quot;&gt;
     &lt;Values dnOrder=&quot;0&quot;&gt;
-      &lt;User dnOrder=&quot;0&quot; value=&quot;ADC0_X23/Y23&quot;/&gt;
+      &lt;User dnOrder=&quot;0&quot; value=&quot;ADC1_AIN7&quot;/&gt;
     &lt;/Values&gt;
   &lt;/core&gt;
 &lt;/core&gt;
@@ -28261,7 +28272,7 @@
       </entry>
       <entry>
          <file>..\src\config\default\peripheral\adc\plib_adc1.c</file>
-         <hash>043f98060cd2afc3cd93bb90544ae60c4c97434ce701484a4b4b01f359d22748</hash>
+         <hash>9533772895eb6b0190a5f9f16e1e8dc7533f2434b27028743124b2fbee7663cc</hash>
       </entry>
       <entry>
          <file>..\src\config\default\peripheral\adc\plib_adc1.h</file>

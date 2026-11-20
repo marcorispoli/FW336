@@ -2,7 +2,7 @@
 
 #include "application.h"
 #include "protocol.h"
-
+#include "../filament/filament.h"
 
 
 
@@ -51,14 +51,40 @@ void inline ApplicationProtocolLoop(void){
  *  
  */
 void ApplicationProtocolCommandHandler(uint8_t cmd, uint8_t d0,uint8_t d1,uint8_t d2,uint8_t d3 ){
-    
+    unsigned short tmo,ma;
+    FILSEL_t focus;
     
     switch(cmd){
         case MET_COMMAND_ABORT:  // This is the Library mandatory 
+            FilamentOff();
             MET_Can_Protocol_returnCommandAborted();
             break;
-        
+            
+        case FILAMENT_OFF:
+            FilamentOff();
+            MET_Can_Protocol_returnCommandExecuted(0,0);
+            break;
+            
+        case ACTIVATE_KEEPING:
+            if(FilamentSetKeeping(d0)) MET_Can_Protocol_returnCommandExecuted(0,0);
+            else MET_Can_Protocol_returnCommandError(MET_CAN_COMMAND_NOT_ENABLED);            
+            break;
        
+        case ACTIVATE_RUNNING:
+            // Assegnazione dei parametri di controllo
+            ma = (unsigned short) d2 + 256 * (unsigned short) d3;
+            tmo = (unsigned short) d1 * 1000;
+            focus = (FILSEL_t) d0;
+            if(FilamentSetCurrent(focus, ma, tmo)) MET_Can_Protocol_returnCommandExecuted(0,0);
+            else MET_Can_Protocol_returnCommandError(MET_CAN_COMMAND_NOT_ENABLED);            
+            break;
+
+        case FILAMENT_INITIALIZATION:
+           
+            if(FilamentInitializationSequence(true)) MET_Can_Protocol_returnCommandExecuted(0,0);
+            else MET_Can_Protocol_returnCommandError(MET_CAN_COMMAND_NOT_ENABLED);            
+            break;
+            
             
         default:
             MET_Can_Protocol_returnCommandError(MET_CAN_COMMAND_NOT_AVAILABLE);
@@ -67,7 +93,12 @@ void ApplicationProtocolCommandHandler(uint8_t cmd, uint8_t d0,uint8_t d1,uint8_
     return;
 }
         
-
+/*
+ 	ABORT_COMMAND = 0,			//!< Abort Command (mandatory as for device protocol)
+	FILAMENT_OFF,				//!< Switches Off he filament
+	ACTIVATE_KEEPING,			//!< Start the filament in keeping mode
+	ACTIVATE_RUNNING,			//!< Start the filament with a target current
+ */
 /**
  * This function assign a status register data to the STATUS REGISTERS of the CAN BUS
  * 

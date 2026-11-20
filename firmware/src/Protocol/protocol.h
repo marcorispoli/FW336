@@ -64,8 +64,8 @@ typedef struct {
 typedef enum{
     MET_CAN_APP_DEVICE_ID    =  0x18,      //!< Application DEVICE CAN Id address
     MET_CAN_STATUS_REGISTERS =  3,        //!< Defines the total number of implemented STATUS registers 
-    MET_CAN_DATA_REGISTERS   =  1,        //!< Defines the total number of implemented Application DATA registers 
-    MET_CAN_PARAM_REGISTERS  =  1       //!< Defines the total number of implemented PARAMETER registers 
+    MET_CAN_DATA_REGISTERS   =  0,        //!< Defines the total number of implemented Application DATA registers 
+    MET_CAN_PARAM_REGISTERS  =  0         //!< Defines the total number of implemented PARAMETER registers 
 }PROTOCOL_DEFINITION_DATA_t;
 
 /**
@@ -129,24 +129,48 @@ ext void decodeDataRegister(void* reg);
 /// \ingroup CANPROT
 /// Defines the address table for the System Registers 
 typedef enum{
-    SYSTEM_STATUS_IDX = 0, //!< This is the System general data status register     
+    FILAMENT_STATUS_IDX = 0,    //!< This is the System general data status register     
+    FILAMENT_MONITOR_IDX,       //!< This is the Filament monitor register
+    FILAMENT_DGN_IDX,           //!< Filament Diagnosys
 }STATUS_INDEX_t;
 
     typedef struct {
         const unsigned char idx; //!< Address constant 
         
-        unsigned char d0; 
-        unsigned char d1; 
-        unsigned char d2; 
-        unsigned char d3; 
-    }SYSTEM_STATUS_t;
+        unsigned char status; 
+        unsigned char focus_selection; 
+        unsigned char d2;  
+        unsigned char d3;     //!< Filament RMS Voltage, 0.1V unit
+    }FILAMENT_STATUS_t;
     
+    typedef struct {
+        const unsigned char idx; //!< Address constant 
+        
+        unsigned char rms_ifilL; //!< Filament RMS Current, mA unit
+        unsigned char rms_ifilH; //!< Filament RMS Current, mA unit
+        unsigned char rms_voltL;    //!< Filament RMS Voltage, mV unit
+        unsigned char rms_voltH;    //!< Filament RMS Voltage, mV unit
+    }FILAMENT_MONITOR_t;
     
+     typedef struct {
+        const unsigned char idx; //!< Address constant 
+        
+        unsigned char filas;    //!< Diagnosys bit field
+        unsigned char filal;    //!< Diagnosys bit field
+        unsigned char filbs;    //!< Diagnosys bit field
+        unsigned char filbl;    //!< Diagnosys bit field
+    }FILAMENT_DGN_t;
+    
+     
     #ifdef _PROTOCOL_C       
-        SYSTEM_STATUS_t SystemStatusRegister = {.idx=SYSTEM_STATUS_IDX};
+        FILAMENT_STATUS_t FilamentStatusRegister = {.idx=FILAMENT_STATUS_IDX};
+        FILAMENT_MONITOR_t FilamentMonitorRegister = {.idx=FILAMENT_MONITOR_IDX};
+        FILAMENT_DGN_t FilamentDgnRegister = {.idx=FILAMENT_DGN_IDX};
         
     #else
-        extern SYSTEM_STATUS_t SystemStatusRegister;
+        extern FILAMENT_STATUS_t FilamentStatusRegister;
+        extern FILAMENT_MONITOR_t FilamentMonitorRegister;
+        extern FILAMENT_DGN_t FilamentDgnRegister;
     #endif  
         
         
@@ -231,8 +255,11 @@ typedef struct {
 /// \ingroup CANPROT
 /// This is the list of the implemented COMMANDS
 typedef enum{
-   CMD_ABORT = 0,               //!< Abort Command
-  
+   	ABORT_COMMAND = 0,			//!< Abort Command (mandatory as for device protocol)
+	FILAMENT_OFF,				//!< Switches Off he filament
+	ACTIVATE_KEEPING,			//!< Start the filament in keeping mode
+	ACTIVATE_RUNNING,			//!< Start the filament with a target current
+    FILAMENT_INITIALIZATION,	//!< Initialize the filament detection
 }PROTOCOL_COMMANDS_t;
 
 /// \ingroup CANPROT

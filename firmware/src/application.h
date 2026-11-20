@@ -171,42 +171,5 @@ static const unsigned char  APPLICATION_MIN_REV =  0 ;  //!< Revision Minor Numb
 static const unsigned char  APPLICATION_SUB_REV =  1 ;  //!< Revision build Number
 
 /** @}*/
-//___________________ SELEZIONE MODULI _____________________
-#define CAN_BUS_ACTIVATION
 
-//___________________ SELEZIONE FUNZIONAMENTO _____________________
-//#define TEST_SWITCH
-//#define TEST_REFERENCE 
-#define RUN_CONST_CURRENT   // Corrente Fissa
-//#define RUN_CONST_VOLTAGE // Regolazione tensione di uscita
-
-#define MOSFET_SWITCH_ENABLED // Attivazione Switching Mosfets
-
-//___________________ SELEZIONE FASE _____________________
-//#define GET_FASE_FROM_VAC
-#define GET_FASE_FROM_SIN
-//#define GET_FASE_FROM_CONST 1
-
-//___________________ IMPOSTAZIONE DAC _____________________
-#define SENS_VREF 2.5       // Volt
-#define SENS_ISENSE 100     // mV/A
-#define DAC_REFERENCE 3.3   // Impostazione uC-DAC
-
-#define MAX_SENS_CURRENT (SENS_VREF*1000/SENS_ISENSE)
-#define DAC(I) (unsigned short) (I * SENS_ISENSE * 65.535 / DAC_REFERENCE)
- 
-//___________________ PERFORMANCES _____________________
-#define VAC_INPUT (220*1.4)    
-#define VAC_THRESHOLD 5
-
-#define AC_SMP_TIME_us 120
-#define AC_FREQ 50
-#define SIN_CORRECT_FASE_us 650
-
-// target di tensione e corrente
-#define TARGET_VOLTAGE 560
-#define MAX_CURRENT 20
-
-#define MIN_VACIN (VAC_INPUT*0.7)
-#define ALARM_VAC_TMO 200 // 15ms unit alarm vac reset time
 #endif 

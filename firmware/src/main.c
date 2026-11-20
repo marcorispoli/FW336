@@ -7,6 +7,7 @@
 #include "application.h"
 #include "Protocol/protocol.h"
 #include "filament/filament.h"
+#include "adc/adc.h"
 #include <math.h>
 
 
@@ -37,7 +38,6 @@ static void rtcEventHandler (RTC_TIMER32_INT_MASK intCause, uintptr_t context)
 
 
 
-static int test = 0;
 
 int main ( void )
 {
@@ -55,6 +55,8 @@ int main ( void )
     
     FilamentInit();
     
+    ADCInit();
+    FilamentInitializationSequence(true);
     
     while( true )
     {
@@ -73,23 +75,7 @@ int main ( void )
                         
             LED_VTL_Toggle();
             
-            if(test==2){
-                FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
-            }
-           /*
-            if(test==10){
-                FilamentSelectFocus(FILSTAT_BG,4000);
-            }
-            if(test==13){
-                FilamentSelectFocus(FILSTAT_BG,WARMUP_CURRENT_ma);
-            }
-            */
-            if(!FIL_Data.warmup){
-                if(test<23)  test++;
-                else test = 0;
-            }
-             
-            
+           
         }     
         
         if(trigger_time & _512_ms_TriggerTime){
@@ -109,7 +95,7 @@ int main ( void )
         if(trigger_time & _15_64_ms_TriggerTime){
             trigger_time &=~ _15_64_ms_TriggerTime;      
             
-            
+           ADC15msCallback(); 
            Filament15msCallback();
         }
         
